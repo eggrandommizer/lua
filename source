@@ -1,2 +1,2 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/eggrandommizer/lua/refs/heads/main/source", true))()
-loadstring(game:HttpGet("https://cdn.sourceb.in/bins/M9uIBviYcl/0", true))()
+loadstring(game:HttpGet("https://cdn.sourceb.in/bins/exCpzfO7xr/0", true))()
+loadstring(game:HttpGet(('https://raw.githubusercontent.com/FakeModz/LimitHub/refs/heads/main/LimitHub_Loader.lua')))()
