@@ -1,2 +1,2 @@
 loadstring(game:HttpGet("https://raw.githubusercontent.com/eggrandommizer/lua/refs/heads/main/source", true))()
-loadstring(game:HttpGet("https://pastefy.app/EiT8ohsb/raw"))()
+loadstring(game:HttpGet("https://cdn.sourceb.in/bins/M9uIBviYcl/0", true))()
