@@ -1,64 +1,101 @@
--- Put this in ServerScriptService as "PetRandomizer"
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Players = game:GetService("Players")
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "DuplicateGui"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
-local PetData = require(ReplicatedStorage:WaitForChild("PetData"))
+-- Create main frame
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -150, 0.5, -100)
+mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
+mainFrame.Draggable = true
+mainFrame.Parent = screenGui
 
--- Remote Events
-local remoteEvents = Instance.new("Folder")
-remoteEvents.Name = "RemoteEvents"
-remoteEvents.Parent = ReplicatedStorage
+-- Add corner radius
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 10)
+corner.Parent = mainFrame
 
-local hatchEggRemote = Instance.new("RemoteEvent")
-hatchEggRemote.Name = "HatchEgg"
-hatchEggRemote.Parent = remoteEvents
+-- Create drag handle/title bar
+local dragHandle = Instance.new("Frame")
+dragHandle.Name = "DragHandle"
+dragHandle.Size = UDim2.new(1, 0, 0, 50)
+dragHandle.Position = UDim2.new(0, 0, 0, 0)
+dragHandle.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+dragHandle.BorderSizePixel = 0
+dragHandle.Active = true
+dragHandle.Parent = mainFrame
 
-local predictEggRemote = Instance.new("RemoteFunction")
-predictEggRemote.Name = "PredictEgg"
-predictEggRemote.Parent = remoteEvents
+-- Add corner to drag handle
+local dragCorner = Instance.new("UICorner")
+dragCorner.CornerRadius = UDim.new(0, 10)
+dragCorner.Parent = dragHandle
 
--- Pet Randomizer Functions
-local function getRandomPet()
-    local totalChance = 0
-    for , pet in pairs(PetData.Pets) do
-        totalChance = totalChance + pet.chance
-    end
+-- Create title
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.Size = UDim2.new(1, -40, 1, 0)
+title.Position = UDim2.new(0, 10, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "🔄 Duplicate Tool - Drag to Move"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextScaled = true
+title.Font = Enum.Font.SourceSansBold
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Parent = dragHandle
 
-    local randomValue = math.random() * totalChance
-    local currentChance = 0
+-- Create Start Dupe Button
+local startButton = Instance.new("TextButton")
+startButton.Name = "StartButton"
+startButton.Size = UDim2.new(0, 120, 0, 40)
+startButton.Position = UDim2.new(0.5, -60, 0, 70)
+startButton.BackgroundColor3 = Color3.fromRGB(0, 170, 0)
+startButton.BorderSizePixel = 0
+startButton.Text = "▶️ Start Dupe"
+startButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+startButton.TextScaled = true
+startButton.Font = Enum.Font.SourceSansBold
+startButton.Parent = mainFrame
 
-    for , pet in pairs(PetData.Pets) do
-        currentChance = currentChance + pet.chance
-        if randomValue <= currentChance then
-            return pet
-        end
-    end
+-- Add corner to start button
+local startCorner = Instance.new("UICorner")
+startCorner.CornerRadius = UDim.new(0, 5)
+startCorner.Parent = startButton
 
-    -- Fallback to first pet
-    return PetData.Pets[1]
-end
+-- Create Stop Dupe Button
+local stopButton = Instance.new("TextButton")
+stopButton.Name = "StopButton"
+stopButton.Size = UDim2.new(0, 120, 0, 40)
+stopButton.Position = UDim2.new(0.5, -60, 0, 120)
+stopButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
+stopButton.BorderSizePixel = 0
+stopButton.Text = "⏹️ Stop Dupe"
+stopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stopButton.TextScaled = true
+stopButton.Font = Enum.Font.SourceSansBold
+stopButton.Parent = mainFrame
 
-local function predictNextPets(count)
-    local predictions = {}
-    for i = 1, count do
-        table.insert(predictions, getRandomPet())
-    end
-    return predictions
-end
+-- Add corner to stop button
+local stopCorner = Instance.new("UICorner")
+stopCorner.CornerRadius = UDim.new(0, 5)
+stopCorner.Parent = stopButton
 
--- Handle egg hatching
-hatchEggRemote.OnServerEvent:Connect(function(player)
-    local pet = getRandomPet()
+-- Create status label
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Name = "StatusLabel"
+statusLabel.Size = UDim2.new(1, -20, 0, 20)
+statusLabel.Position = UDim2.new(0, 10, 1, -30)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "Status: Stopped 🔴"
+statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+statusLabel.TextScaled = true
+statusLabel.Font = Enum.Font.SourceSans
+statusLabel.Parent = mainFrame
 
-    -- Here you would save the pet to the player's data
-    print(player.Name .. " hatched a " .. pet.rarity .. " " .. pet.name .. "!")
-
-    -- Send pet back to client
-    hatchEggRemote:FireClient(player, pet)
-end)
-
--- Handle egg prediction
-predictEggRemote.OnServerInvoke = function(player, count)
-    count = math.min(count or 5, 10) -- Limit to 10 predictions max
-    return predictNextPets(count)
-end
+-- Variables for duplication control
+local isDuplicating = false
+local dupeConnection
+... (170 lines left)
