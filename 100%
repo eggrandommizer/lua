@@ -1,39 +1,64 @@
--- Put this in ReplicatedStorage as "PetData"
-local PetData = {}
+-- Put this in ServerScriptService as "PetRandomizer"
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
 
-PetData.Pets = {
-    -- Common Pets (60% chance)
-    {name = "Butterfly", rarity = "Common", chance = 25, power = 1, image = "rbxassetid://0"},
-    {name = "Ladybug", rarity = "Common", chance = 20, power = 1, image = "rbxassetid://0"},
-    {name = "Bee", rarity = "Common", chance = 15, power = 2, image = "rbxassetid://0"},
+local PetData = require(ReplicatedStorage:WaitForChild("PetData"))
 
-    -- Uncommon Pets (25% chance)
-    {name = "Rabbit", rarity = "Uncommon", chance = 12, power = 3, image = "rbxassetid://0"},
-    {name = "Squirrel", rarity = "Uncommon", chance = 8, power = 4, image = "rbxassetid://0"},
-    {name = "Hedgehog", rarity = "Uncommon", chance = 5, power = 5, image = "rbxassetid://0"},
+-- Remote Events
+local remoteEvents = Instance.new("Folder")
+remoteEvents.Name = "RemoteEvents"
+remoteEvents.Parent = ReplicatedStorage
 
-    -- Rare Pets (10% chance)
-    {name = "Fox", rarity = "Rare", chance = 4, power = 8, image = "rbxassetid://0"},
-    {name = "Owl", rarity = "Rare", chance = 3, power = 10, image = "rbxassetid://0"},
-    {name = "Deer", rarity = "Rare", chance = 3, power = 12, image = "rbxassetid://0"},
+local hatchEggRemote = Instance.new("RemoteEvent")
+hatchEggRemote.Name = "HatchEgg"
+hatchEggRemote.Parent = remoteEvents
 
-    -- Epic Pets (4% chance)
-    {name = "Wolf", rarity = "Epic", chance = 2, power = 20, image = "rbxassetid://0"},
-    {name = "Eagle", rarity = "Epic", chance = 1.5, power = 25, image = "rbxassetid://0"},
-    {name = "Bear", rarity = "Epic", chance = 0.5, power = 30, image = "rbxassetid://0"},
+local predictEggRemote = Instance.new("RemoteFunction")
+predictEggRemote.Name = "PredictEgg"
+predictEggRemote.Parent = remoteEvents
 
-    -- Legendary Pets (1% chance)
-    {name = "Dragon", rarity = "Legendary", chance = 0.5, power = 50, image = "rbxassetid://0"},
-    {name = "Phoenix", rarity = "Legendary", chance = 0.3, power = 75, image = "rbxassetid://0"},
-    {name = "Unicorn", rarity = "Legendary", chance = 0.2, power = 100, image = "rbxassetid://0"}
-}
+-- Pet Randomizer Functions
+local function getRandomPet()
+    local totalChance = 0
+    for , pet in pairs(PetData.Pets) do
+        totalChance = totalChance + pet.chance
+    end
 
-PetData.RarityColors = {
-    Common = Color3.fromRGB(255, 255, 255),
-    Uncommon = Color3.fromRGB(0, 255, 0),
-    Rare = Color3.fromRGB(0, 100, 255),
-    Epic = Color3.fromRGB(150, 0, 255),
-    Legendary = Color3.fromRGB(255, 215, 0)
-}
+    local randomValue = math.random() * totalChance
+    local currentChance = 0
 
-return PetData
+    for , pet in pairs(PetData.Pets) do
+        currentChance = currentChance + pet.chance
+        if randomValue <= currentChance then
+            return pet
+        end
+    end
+
+    -- Fallback to first pet
+    return PetData.Pets[1]
+end
+
+local function predictNextPets(count)
+    local predictions = {}
+    for i = 1, count do
+        table.insert(predictions, getRandomPet())
+    end
+    return predictions
+end
+
+-- Handle egg hatching
+hatchEggRemote.OnServerEvent:Connect(function(player)
+    local pet = getRandomPet()
+
+    -- Here you would save the pet to the player's data
+    print(player.Name .. " hatched a " .. pet.rarity .. " " .. pet.name .. "!")
+
+    -- Send pet back to client
+    hatchEggRemote:FireClient(player, pet)
+end)
+
+-- Handle egg prediction
+predictEggRemote.OnServerInvoke = function(player, count)
+    count = math.min(count or 5, 10) -- Limit to 10 predictions max
+    return predictNextPets(count)
+end
