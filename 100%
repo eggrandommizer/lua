@@ -1,1 +1,39 @@
-loadstring(game:HttpGet("https://pastefy.app/ZGMuqkb9/raw"))()
+-- Put this in ReplicatedStorage as "PetData"
+local PetData = {}
+
+PetData.Pets = {
+    -- Common Pets (60% chance)
+    {name = "Butterfly", rarity = "Common", chance = 25, power = 1, image = "rbxassetid://0"},
+    {name = "Ladybug", rarity = "Common", chance = 20, power = 1, image = "rbxassetid://0"},
+    {name = "Bee", rarity = "Common", chance = 15, power = 2, image = "rbxassetid://0"},
+
+    -- Uncommon Pets (25% chance)
+    {name = "Rabbit", rarity = "Uncommon", chance = 12, power = 3, image = "rbxassetid://0"},
+    {name = "Squirrel", rarity = "Uncommon", chance = 8, power = 4, image = "rbxassetid://0"},
+    {name = "Hedgehog", rarity = "Uncommon", chance = 5, power = 5, image = "rbxassetid://0"},
+
+    -- Rare Pets (10% chance)
+    {name = "Fox", rarity = "Rare", chance = 4, power = 8, image = "rbxassetid://0"},
+    {name = "Owl", rarity = "Rare", chance = 3, power = 10, image = "rbxassetid://0"},
+    {name = "Deer", rarity = "Rare", chance = 3, power = 12, image = "rbxassetid://0"},
+
+    -- Epic Pets (4% chance)
+    {name = "Wolf", rarity = "Epic", chance = 2, power = 20, image = "rbxassetid://0"},
+    {name = "Eagle", rarity = "Epic", chance = 1.5, power = 25, image = "rbxassetid://0"},
+    {name = "Bear", rarity = "Epic", chance = 0.5, power = 30, image = "rbxassetid://0"},
+
+    -- Legendary Pets (1% chance)
+    {name = "Dragon", rarity = "Legendary", chance = 0.5, power = 50, image = "rbxassetid://0"},
+    {name = "Phoenix", rarity = "Legendary", chance = 0.3, power = 75, image = "rbxassetid://0"},
+    {name = "Unicorn", rarity = "Legendary", chance = 0.2, power = 100, image = "rbxassetid://0"}
+}
+
+PetData.RarityColors = {
+    Common = Color3.fromRGB(255, 255, 255),
+    Uncommon = Color3.fromRGB(0, 255, 0),
+    Rare = Color3.fromRGB(0, 100, 255),
+    Epic = Color3.fromRGB(150, 0, 255),
+    Legendary = Color3.fromRGB(255, 215, 0)
+}
+
+return PetData
